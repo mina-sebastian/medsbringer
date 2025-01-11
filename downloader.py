@@ -28,5 +28,5 @@ def download_meds(meds_list, output_dir, delay=1, startFrom=0):
 
 
 if __name__ == '__main__':
-    meds_list = read_meds_list_json('meds_list_RO.json')
-    download_meds(meds_list, 'ro_meds_downloaded', startFrom=501)
+    meds_list = read_meds_list_json('meds_list_DE.json')
+    download_meds(meds_list, 'de_meds_downloaded')
