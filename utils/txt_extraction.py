@@ -2,7 +2,7 @@ import os
 from PyPDF2 import PdfReader
 
 input_folder = "../raw_data_pdf/en_meds_downloaded/"
-output_file = "../raw_data_txt/en_meds.txt"
+output_file = "../data/raw_data_txt/en_meds.txt"
 
 
 def extract_text_from_pdfs(input_folder, output_file):
