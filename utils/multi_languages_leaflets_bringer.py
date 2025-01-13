@@ -32,7 +32,7 @@ for row in dfs.itertuples():
             'firma': row.Company
         })
     
-json.dump(info, open('../raw_data_links/meds_list_EN.json', 'w'), indent=4)
+json.dump(info, open('../data/raw_data_links/meds_list_EN.json', 'w'), indent=4)
 
 
 ## FR
@@ -51,7 +51,7 @@ for row in dfs.itertuples():
             'firma': row.Company
         })
     
-json.dump(info, open('../raw_data_links/meds_list_FR.json', 'w'), indent=4)
+json.dump(info, open('../data/raw_data_links/meds_list_FR.json', 'w'), indent=4)
 
 
 # ## RO
@@ -70,7 +70,7 @@ for row in dfs.itertuples():
             'firma': row.Company
         })
     
-json.dump(info, open('../raw_data_links/meds_list_RO1.json', 'w'), indent=4)
+json.dump(info, open('../data/raw_data_links/meds_list_RO1.json', 'w'), indent=4)
 
 
 # # ## DE
@@ -89,7 +89,7 @@ for row in dfs.itertuples():
             'firma': row.Company
         })
     
-json.dump(info, open('../raw_data_links/meds_list_DE.json', 'w'), indent=4)
+json.dump(info, open('../data/raw_data_links/meds_list_DE.json', 'w'), indent=4)
 
 # ## IT
 
@@ -107,4 +107,4 @@ for row in dfs.itertuples():
             'firma': row.Company
         })
     
-json.dump(info, open('../raw_data_links/meds_list_IT.json', 'w'), indent=4)
+json.dump(info, open('../data/raw_data_links/meds_list_IT.json', 'w'), indent=4)
