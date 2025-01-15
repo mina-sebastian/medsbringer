@@ -3,75 +3,122 @@ import pandas as pd
 import nltk
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 
-# Ensure required NLTK resources are downloaded
-nltk.download('punkt')
+
+# Download required NLTK resources
+nltk.download('punkt_tab')
 nltk.download('wordnet')
 nltk.download('stopwords')
 
+# Language-specific resources
+LANGUAGE_RESOURCES = {
+    'en': {
+        'stopwords': set(stopwords.words('english')),
+        'lemmatizer': WordNetLemmatizer()
+    },
+    'fr': {
+        'stopwords': set(stopwords.words('french')),
+        'lemmatizer': None  # French needs different lemmatization
+    },
+    'ro': {
+        'stopwords': set(stopwords.words('romanian')),
+        'lemmatizer': None  # Romanian needs different lemmatization
+    },
+    'da': {
+        'stopwords': set(stopwords.words('danish')),
+        'lemmatizer': None
+    },
+    'de': {
+        'stopwords': set(stopwords.words('german')),
+        'lemmatizer': None
+    },
+    'nl': {
+        'stopwords': set(stopwords.words('dutch')),
+        'lemmatizer': None
+    }
+}
 
-def preprocess_text(text):
+
+# def preprocess_text(text, language='en'):
+#     """
+#     Clean and preprocess the text based on language.
+#     """
+#     resources = LANGUAGE_RESOURCES.get(language)
+#     if not resources:
+#         raise ValueError(f"Unsupported language: {language}")
+#
+#     # Convert to lowercase
+#     text = text.lower()
+#
+#     # Remove punctuation
+#     text = re.sub(r'[^\w\s.!?]', '', text)
+#
+#     # Remove extra whitespace
+#     text = re.sub(r'\s+', ' ', text).strip()
+#
+#     # Remove stopwords if available for the language
+#     if resources['stopwords']:
+#         text = ' '.join([word for word in text.split() if word not in resources['stopwords']])
+#
+#     # Lemmatize if available for the language
+#     if resources['lemmatizer']:
+#         text = ' '.join([resources['lemmatizer'].lemmatize(word) for word in text.split()])
+#
+#     return text
+def preprocess_text(text, language='en'):
     """
-    Clean and preprocess the text.
-    Steps:
-    1. Convert to lowercase.
-    2. Remove punctuation.
-    3. Remove extra whitespace.
-    4. Remove stopwords.
-    5. Lemmatize words.
+    Clean and preprocess the text based on language.
     """
-    # Initialize lemmatizer and stop words
-    lemmatizer = WordNetLemmatizer()
-    stop_words = set(stopwords.words('english'))
+    resources = LANGUAGE_RESOURCES.get(language)
+    if not resources:
+        raise ValueError(f"Unsupported language: {language}")
 
     # Convert to lowercase
     text = text.lower()
-    # Remove punctuation
-    text = re.sub(r'[^\w\s]', '', text)
-    # Remove extra whitespace
-    text = re.sub(r'\s+', ' ', text).strip()
-    # Remove stop words
-    text = ' '.join([word for word in text.split() if word not in stop_words])
-    # Lemmatize words
-    text = ' '.join([lemmatizer.lemmatize(word) for word in text.split()])
+
+    # Tokenize the text using nltk
+    tokens = word_tokenize(text)
+
+    # Remove punctuation and unwanted characters
+    tokens = [word for word in tokens if word.isalnum() or word in ['.', '!', '?']]
+
+    # Remove stopwords if available for the language
+    if resources['stopwords']:
+        tokens = [word for word in tokens if word not in resources['stopwords']]
+
+    # Lemmatize if available for the language
+    if resources['lemmatizer']:
+        tokens = [resources['lemmatizer'].lemmatize(word) for word in tokens]
+
+    # Join the tokens back into a single string
+    text = ' '.join(tokens)
+
     return text
 
-
-def clean_csv_data(input_csv_path):
+def clean_csv_data(input_csv_path, language='en'):
     """
-    Load, clean, and return the CSV data with `id` and `extracted_text` columns.
-
-    Args:
-    - input_csv_path (str): Path to the input CSV file.
-
-    Returns:
-    - pd.DataFrame: DataFrame with cleaned `extracted_text`.
+    Load, clean, and return the CSV data with language-specific processing.
     """
     try:
-        # Read the CSV file into a DataFrame
         data = pd.read_csv(input_csv_path)
 
-        # Check for required columns
         if 'id' not in data.columns or 'extracted_text' not in data.columns:
             raise ValueError("CSV must contain 'id' and 'extracted_text' columns.")
 
-        # Clean the `extracted_text` column
-        data['extracted_text'] = data['extracted_text'].apply(preprocess_text)
-
+        data['extracted_text'] = data['extracted_text'].apply(lambda x: preprocess_text(x, language))
         return data
+
     except Exception as e:
         print(f"Error processing CSV data: {e}")
         return None
 
 
 if __name__ == "__main__":
-    # Input CSV file path
-    input_csv_path = '../data/raw_data_csv/en_meds.csv'
-
-    # Clean and process the data
-    cleaned_data = clean_csv_data(input_csv_path)
-
-    # Print the cleaned data
-    if cleaned_data is not None:
-        print("Cleaned Data (first few rows):")
-        print(cleaned_data.head())
+    languages = ['en', 'fr', 'ro']
+    for lang in languages:
+        input_csv_path = f'../data/raw_data_csv/{lang}_meds.csv'
+        cleaned_data = clean_csv_data(input_csv_path, lang)
+        if cleaned_data is not None:
+            print(f"\nCleaned Data for {lang} (first few rows):")
+            print(cleaned_data.head())
