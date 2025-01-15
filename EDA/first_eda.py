@@ -13,22 +13,23 @@ from sklearn.cluster import KMeans
 import pandas as pd
 import re
 
+
 # Frequency analysis
 def make_freq_analysis(df, text_column="extracted_text", title="Word Cloud", num_top_words=10):
     """generate and display a word cloud and top word freq from the specified text column in df"""
-    #all text into a single string
+    # all text into a single string
     all_text = " ".join(df[text_column].dropna())
 
-    #tokenize the text and count word freq
+    # tokenize the text and count word freq
     words = all_text.split()
     word_counts = Counter(words)
 
-    #display top frequent words
+    # display top frequent words
     print(f"Top {num_top_words} most frequent words:")
     for word, count in word_counts.most_common(num_top_words):
         print(f"{word}: {count}")
 
-    #gen word cloud
+    # gen word cloud
     wordcloud = WordCloud(width=800, height=400).generate_from_frequencies(word_counts)
     plt.figure(figsize=(10, 5))
     plt.imshow(wordcloud, interpolation="bilinear")
@@ -36,7 +37,7 @@ def make_freq_analysis(df, text_column="extracted_text", title="Word Cloud", num
     plt.title(title)
     plt.show()
 
-    #freq distribution bar plot
+    # freq distribution bar plot
     freq_data = word_counts.most_common(num_top_words)
     words, counts = zip(*freq_data)
     sns.barplot(x=list(counts), y=list(words))
@@ -45,16 +46,17 @@ def make_freq_analysis(df, text_column="extracted_text", title="Word Cloud", num
     plt.ylabel('Words')
     plt.show()
 
+
 # Topic Modeling
 def perform_topic_modeling(df, text_column="extracted_text", num_topics=5, max_features=1000):
-    #all text into a single string
+    # all text into a single string
     all_text = " ".join(df[text_column].dropna())
 
-    #vectorize the text
+    # vectorize the text
     vectorizer = TfidfVectorizer(stop_words="english", max_features=max_features)
     X = vectorizer.fit_transform([all_text])
 
-    #LDA
+    # LDA
     lda = LatentDirichletAllocation(n_components=num_topics, random_state=42)
     lda.fit(X)
 
@@ -63,17 +65,18 @@ def perform_topic_modeling(df, text_column="extracted_text", num_topics=5, max_f
     for idx, topic in enumerate(lda.components_):
         print(f"Topic {idx + 1}: ", [terms[i] for i in topic.argsort()[-10:]])
 
+
 # Clustering
 def perform_clustering(df, text_column="extracted_text", num_clusters=5, max_features=1000):
     """Perform clustering on the specified text column in a DataFrame."""
-    #convert column to a list of texts
+    # convert column to a list of texts
     texts = df[text_column].dropna().tolist()
 
-    #Vectorize text
+    # Vectorize text
     vectorizer = TfidfVectorizer(stop_words="english", max_features=max_features)
     X = vectorizer.fit_transform(texts)
 
-    #KMeans clustering
+    # KMeans clustering
     kmeans = KMeans(n_clusters=num_clusters, random_state=42)
     clusters = kmeans.fit_predict(X)
 
@@ -90,27 +93,28 @@ def visualize_clusters(df, cluster_column="cluster"):
     plt.ylabel("Count")
     plt.show()
 
+
 def identify_discriminatory_words(df, text_column="extracted_text", max_features=1000):
     """
     Identify words with significant deviation using a Poisson distribution
     from the specified text column, filtering out irrelevant tokens.
     """
-    #all text into a single string
+    # all text into a single string
     all_text = " ".join(df[text_column].dropna())
 
-    #avoid numbers and special characters, and convert to lowercase
+    # avoid numbers and special characters, and convert to lowercase
     all_text = re.sub(r"[^a-zA-Z\s]", "", all_text.lower())
 
-    #vectorize the text
+    # vectorize the text
     vectorizer = TfidfVectorizer(stop_words="english", max_features=max_features)
     X = vectorizer.fit_transform([all_text])
     word_counts = X.sum(axis=0).A1
 
-    #poisson distribution
+    # poisson distribution
     poisson_fit = poisson(mu=np.mean(word_counts))
     terms = vectorizer.get_feature_names_out()
 
-    #words with significant deviation,filter out irrelevant tokens
+    # words with significant deviation,filter out irrelevant tokens
     discriminatory_words = [
         terms[i] for i in np.where(poisson_fit.pmf(word_counts) < 0.05)[0]
         if len(terms[i]) > 2  # Exclude short tokens (e.g., single letters)
@@ -124,6 +128,37 @@ def identify_discriminatory_words(df, text_column="extracted_text", max_features
     return discriminatory_words
 
 
+def analyze_all_languages():
+    languages = ['en', 'fr', 'ro', 'de', 'da','nl' ]  # Add more language codes as needed
+    results = {}
+
+    for lang in languages:
+        file_path = f"../data/raw_data_csv/{lang}_meds.csv"
+        print(f"\nAnalyzing {lang.upper()} language data...")
+
+        # Load and clean data
+        data = clean_csv_data(file_path, lang)
+        if data is None:
+            continue
+
+        # Store results for this language
+        results[lang] = {
+            'data': data,
+            'word_frequencies': make_freq_analysis(data, title=f"Word Cloud - {lang.upper()}"),
+            'topics': perform_topic_modeling(data),
+            'clusters': perform_clustering(data)
+        }
+
+        # Visualize clusters for this language
+        visualize_clusters(results[lang]['clusters'])
+
+        # Identify discriminatory words
+        discriminatory_words = identify_discriminatory_words(data)
+        results[lang]['discriminatory_words'] = discriminatory_words
+
+    return results
+
+
 if __name__ == "__main__":
     file_path = "../data/raw_data_csv/en_meds.csv"
     # Load and clean data
@@ -131,22 +166,25 @@ if __name__ == "__main__":
     """
     print("Testing word cloud generation...")
     generate_wordcloud(data['EN'].iloc[0], title="Sample Word Cloud")
-"""
+    """
+
+    analysis_results = analyze_all_languages()
+    """
     # Perform frequency analysis
     print("Generating word cloud...")
     make_freq_analysis(data)
 
-    """
+
     # Perform topic modeling
     print("Performing topic modeling...")
     perform_topic_modeling(data)
 
-    
+
     # Perform clustering
     clusters = perform_clustering(data)
     print("Cluster assignments:", clusters)
-    
+
     # Identify discriminatory words
     print("Identifying discriminatory words...")
     identify_discriminatory_words(data)
-"""
+    """
