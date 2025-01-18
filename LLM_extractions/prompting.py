@@ -38,21 +38,24 @@ def num_tokens_from_string(string: str) -> int:
 
 def get_excerpts_for_leaflets(no_leaflets, system_prompt):
     idx = 0
+    not_checked = [x for x in range(500) if x not in checked_leaflets]
     while idx < no_leaflets:
         print(idx)
-        random_leaflet_idx = random.randint(0, 500)
+        # random_leaflet_idx = random.randint(0, 500)
+        random_leaflet_idx = random.choice(not_checked)
 
         try:
             leaflet_text = clean_leaflet(random_leaflet_idx)
         except:
             continue
 
-        no_tokens = num_tokens_from_string(leaflet_text)
+        # no_tokens = num_tokens_from_string(leaflet_text)
             
-        if no_tokens < 6000 and random_leaflet_idx not in checked_leaflets:
+        if random_leaflet_idx not in checked_leaflets:
             get_excerpts(system_prompt, leaflet_text, random_leaflet_idx, is_test=False)
             idx += 1
             checked_leaflets.append(random_leaflet_idx)
+            not_checked.remove(random_leaflet_idx)
 
 
 client = OpenAI()
@@ -63,7 +66,7 @@ system_prompt = 'You will be provided with the content of a medication package i
 # if there are already extracted leaflets, don t duplicate them
 input_folder = "LLM_extractions/results/llm_results"
 checked_leaflets = [int(f.split('_')[0]) for f in os.listdir(input_folder) if f.endswith(".json")]
-# print(len(checked_leaflets))
+print(len(checked_leaflets))
 
 # for llm testing
 # random_leaflet_idx = random.randint(0, 500)
@@ -75,4 +78,4 @@ checked_leaflets = [int(f.split('_')[0]) for f in os.listdir(input_folder) if f.
 
 
 # for llm excerpts
-get_excerpts_for_leaflets(no_leaflets=100, system_prompt=system_prompt)
+# get_excerpts_for_leaflets(no_leaflets=63, system_prompt=system_prompt)
