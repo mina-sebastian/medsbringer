@@ -56,18 +56,17 @@ def get_excerpts_for_leaflets(no_leaflets, system_prompt):
 
 
 client = OpenAI()
-system_prompt = 'You will be provided with the content of a medication package insert in romanian. The leaflet should be simple, readable and comprehensible, even to people with limited health literacy skills. Your task is to extract from the leaflet\'s text the passages that don\'t meet these criteria. Pretend the words are correctly spelled, ignore the fact that the hyphens are missing. Provide output in JSON format as follows: [{"excerpt": "..."}, ... {"excerpt": "..."}]. Take care not to omit any passage difficult to understand. If the text does not contain passages with high-complexity then simply write an empty array.'
-
-checked_leaflets = []
+system_prompt = 'You will be provided with the content of a medication package insert in romanian. The leaflet should be simple, readable and comprehensible, even to people with limited health literacy skills. Your task is to extract from the leaflet\'s text the passages that don\'t meet these criteria. Pretend the words are correctly spelled, ignore the fact that the hyphens are missing. Provide output in a JSON array as follows: [{"excerpt": "..."}, ... {"excerpt": "..."}]. Don\'t add any other text to the output but the array with the excerpts. Take care not to omit any passage difficult to understand. If the text does not contain passages with high-complexity then simply write an empty array.'
+# system_prompt = 'Pretend you are a person with average education level and no medical literacy skills. You will be provided with a content of a medication package insert in romanian. Your task is to extract the passages that you find complex, difficult to understand. Provide output in a JSON array as follows: [{"excerpt": "..."}, ... {"excerpt": "..."}]. Don\'t add any other text to the output but the array with the excerpts. Take care not to omit any difficult passage. If the text does not contain passages with high-complexity then simply write an empty array.'
+# checked_leaflets = []
 
 # if there are already extracted leaflets, don t duplicate them
-# input_folder = "LLM_extractions/results/llm_results"
-# checked_leaflets = [int(f.split('_')[0]) for f in os.listdir(input_folder) if f.endswith(".json")]
+input_folder = "LLM_extractions/results/llm_results"
+checked_leaflets = [int(f.split('_')[0]) for f in os.listdir(input_folder) if f.endswith(".json")]
 # print(len(checked_leaflets))
 
 # for llm testing
 # random_leaflet_idx = random.randint(0, 500)
-# random_leaflet_idx = 207
 # print(random_leaflet_idx)
 # leaflet_text = clean_leaflet(random_leaflet_idx)
 # print(leaflet_text)
@@ -76,4 +75,4 @@ checked_leaflets = []
 
 
 # for llm excerpts
-# get_excerpts_for_leaflets(no_leaflets=55, system_prompt=system_prompt)
+get_excerpts_for_leaflets(no_leaflets=100, system_prompt=system_prompt)
