@@ -1,0 +1,18 @@
+Sentences labeled 0: 3623
+Sentences labeled 1: 3623
+
+Train data: 5796
+Test data: 1450
+
+Accuracy: 0.596551724137931
+
+Classification Report
+======================================================
+              precision    recall  f1-score   support
+
+           0       0.64      0.51      0.57       747
+           1       0.57      0.69      0.62       703
+
+    accuracy                           0.60      1450
+   macro avg       0.60      0.60      0.59      1450
+weighted avg       0.60      0.60      0.59      1450
