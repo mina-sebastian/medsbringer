@@ -78,4 +78,4 @@ print(len(checked_leaflets))
 
 
 # for llm excerpts
-# get_excerpts_for_leaflets(no_leaflets=63, system_prompt=system_prompt)
+# get_excerpts_for_leaflets(no_leaflets=100, system_prompt=system_prompt)

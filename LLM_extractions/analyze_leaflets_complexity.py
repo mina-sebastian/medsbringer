@@ -40,8 +40,10 @@ def calculate_percents(filenames, llm_folder):
     df = pd.DataFrame(data)
 
     llm_mean = df.loc[:, 'Chat GPT excerpts %'].mean()
+    llm_max = df.loc[:, 'Chat GPT excerpts %'].max()
 
     df.loc[len(df)] = ['Average', llm_mean]
+    df.loc[len(df)] = ['Maximum', llm_max]
 
     return df
 
