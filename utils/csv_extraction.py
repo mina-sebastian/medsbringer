@@ -37,7 +37,7 @@ def extract_text_from_pdfs_to_csv(input_folder, output_csv):
         for idx, pdf_file in enumerate(pdf_files):
             pdf_path = os.path.join(input_folder, pdf_file)
             try:
-                reader = PdfReader(pdf_path)
+                reader = PdfReader(pdf_path, EXT)
                 text = ""
                 for page in reader.pages:
                     extracted_text = page.extract_text()
