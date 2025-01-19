@@ -7,6 +7,28 @@
 # IDE settings (e.g., JetBrains IntelliJ, PyCharm, WebStorm)
 .idea/
 
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore Jupyter configuration and runtime files
+.jupyter/
+.jupyterlab/
+.local/share/jupyter/
+
+# Ignore Jupyter nbconvert output files
+*.nbconvert/
+*.nbconvert.log
+
+
+# Ignore outputs from Jupyter
+*.html
+*.json
+*.csv
+*.tsv
+*.log
+
+# Ignore the output folder
+output/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
