@@ -26,23 +26,31 @@ def read_meds_list_json(filename):
         return json.load(file)
 
 
-def download_meds(meds_list, output_dir, delay=10, startFrom=156):
+def download_meds(meds_list, output_dir, delay=30, startFrom=501, not_downloaded = []):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    for i, med in tqdm(enumerate(meds_list)):
-        if i < startFrom:
-            continue
-        filename = f"{i}.pdf"
+    with open('./data/download_failures.txt', 'a') as file:
+        for i, med in tqdm(enumerate(meds_list)):
+            if i > 503:
+                break
+            if i < startFrom: # or i not in not_downloaded:
+                continue
+            filename = f"{i}.pdf"
 
-        success = download_file(med['url'], filename, output_dir)
-        time.sleep(delay)
-        if not success:
-            print(f"Unsuccessful download for {filename} at index {i}")
-            failures.append(med['url'])
-            continue
+            success = download_file(med['url'], filename, output_dir)
+            time.sleep(delay)
+            if not success:
+                print(f"Unsuccessful download for {filename} at index {i}")
+                failures.append(med['url'])
+                file.write(med['url'])
+                file.write('\n')
+                print(med['url'])
+                continue
 
 
 if __name__ == '__main__':
-    meds_list = read_meds_list_json('../data/raw_data_links/meds_list_EN.json')
-    download_meds(meds_list, '../data/raw_data_pdf/en_meds_downloaded')
+    not_downloaded = []
+    # print(len(not_downloaded))
+    meds_list = read_meds_list_json('./data/raw_data_links/meds_list_RO1.json')
+    download_meds(meds_list, './data/raw_data_pdf/ro1_meds_downloaded', not_downloaded=not_downloaded)
