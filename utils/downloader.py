@@ -26,7 +26,7 @@ def read_meds_list_json(filename):
         return json.load(file)
 
 
-def download_meds(meds_list, output_dir, delay=30, startFrom=501, not_downloaded = []):
+def download_meds(meds_list, output_dir, delay=30, startFrom=436, not_downloaded = []):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -52,5 +52,5 @@ def download_meds(meds_list, output_dir, delay=30, startFrom=501, not_downloaded
 if __name__ == '__main__':
     not_downloaded = []
     # print(len(not_downloaded))
-    meds_list = read_meds_list_json('./data/raw_data_links/meds_list_RO1.json')
-    download_meds(meds_list, './data/raw_data_pdf/ro1_meds_downloaded', not_downloaded=not_downloaded)
+    meds_list = read_meds_list_json('./data/raw_data_links/meds_list_DE.json')
+    download_meds(meds_list, './data/raw_data_pdf/de1_meds_downloaded', not_downloaded=not_downloaded)
